@@ -1,0 +1,32 @@
+Write this in Python App.
+
+
+
+import requests
+
+cookie = "YOUR_ROBLOX_COOKIE_HERE"  --replace with your cookies.
+
+headers = {
+    "Cookie": f".ROBLOSECURITY={cookie}",
+    "Content-Type": "application/json"
+}
+
+free_items_url = "https://catalog.roblox.com/v1/search/items/details?Category=1&Subcategory=2&SortType=3&Limit=30"
+
+response = requests.get(free_items_url, headers=headers)
+items = response.json().get("data", [])
+
+for item in items:
+    if item["price"] == 0:
+        item_id = item["id"]
+        buy_url = f"https://economy.roblox.com/v1/purchases/products/{item_id}"
+        data = {"expectedCurrency": 1, "expectedPrice": 0, "expectedSellerId": item["creatorTargetId"]}
+        buy_response = requests.post(buy_url, json=data, headers=headers)
+
+        if buy_response.status_code == 200:
+            print(f"✅ Successfully bought {item['name']}!")
+        else:
+            print(f"❌ Failed to buy {item['name']}")
+
+
+
